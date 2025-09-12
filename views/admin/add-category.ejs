@@ -1,0 +1,90 @@
+<%- include('partials/header') %>
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="/admin/categories">Categories</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Add Category</li>
+                </ol>
+            </nav>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">
+                                <i class="fas fa-plus me-2"></i>Add New Category
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <% if (errors && errors.general) { %>
+                                <div class="alert alert-danger">
+                                    <%= errors.general %>
+                                </div>
+                            <% } %>
+
+                            <form method="POST" action="/admin/categories/add">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="name" class="form-label">
+                                            Category Name <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control <%= errors && errors.name ? 'is-invalid' : '' %>" 
+                                               id="name" 
+                                               name="name" 
+                                               value="<%= category ? category.name : '' %>" 
+                                               required>
+                                        <% if (errors && errors.name) { %>
+                                            <div class="invalid-feedback">
+                                                <%= errors.name %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="status" class="form-label">Status</label>
+                                        <select class="form-select" id="status" name="status">
+                                            <option value="active" <%= (!category || category.status === 'active') ? 'selected' : '' %>>
+                                                Active
+                                            </option>
+                                            <option value="inactive" <%= (category && category.status === 'inactive') ? 'selected' : '' %>>
+                                                Inactive
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="description" class="form-label">Description</label>
+                                        <textarea class="form-control" 
+                                                  id="description" 
+                                                  name="description" 
+                                                  rows="4" 
+                                                  placeholder="Enter category description (optional)"><%= category ? category.description : '' %></textarea>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-2"></i>Save Category
+                                            </button>
+                                            <a href="/admin/categories" class="btn btn-outline-secondary">
+                                                <i class="fas fa-times me-2"></i>Cancel
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

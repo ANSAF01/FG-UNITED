@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main class="container py-4">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Account Settings</li>
+      </ol>
+    </nav>
+
+    <div class="row">
+      <!-- Settings Navigation -->
+      <div class="col-lg-3 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h6 class="mb-0">Settings</h6>
+          </div>
+          <div class="list-group list-group-flush">
+            <a href="#profile" class="list-group-item list-group-item-action active" data-bs-toggle="pill">
+              <i class="fas fa-user me-2"></i>Profile Information
+            </a>
+            <a href="#security" class="list-group-item list-group-item-action" data-bs-toggle="pill">
+              <i class="fas fa-lock me-2"></i>Security
+            </a>
+            <a href="#notifications" class="list-group-item list-group-item-action" data-bs-toggle="pill">
+              <i class="fas fa-bell me-2"></i>Notifications
+            </a>
+            <a href="#privacy" class="list-group-item list-group-item-action" data-bs-toggle="pill">
+              <i class="fas fa-shield-alt me-2"></i>Privacy
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Content -->
+      <div class="col-lg-9">
+        <div class="tab-content">
+          <!-- Profile Information -->
+          <div class="tab-pane fade show active" id="profile">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="mb-0">Profile Information</h5>
+              </div>
+              <div class="card-body">
+                <form>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Full Name</label>
+                      <input type="text" class="form-control" value="<%= user.fullname %>" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Email Address</label>
+                      <input type="email" class="form-control" value="<%= user.email %>" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Phone Number</label>
+                      <input type="tel" class="form-control" placeholder="Enter phone number">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Date of Birth</label>
+                      <input type="date" class="form-control">
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label">Bio</label>
+                      <textarea class="form-control" rows="3" placeholder="Tell us about yourself"></textarea>
+                    </div>
+                    <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Security -->
+          <div class="tab-pane fade" id="security">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="mb-0">Security Settings</h5>
+              </div>
+              <div class="card-body">
+                <!-- Change Password -->
+                <div class="mb-4">
+                  <h6>Change Password</h6>
+                  <form>
+                    <div class="row g-3">
+                      <div class="col-12">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-control" required>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-control" required>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" required>
+                      </div>
+                      <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Update Password</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
+                <hr>
+
+                <!-- Two-Factor Authentication -->
+                <div class="mb-4">
+                  <h6>Two-Factor Authentication</h6>
+                  <p class="text-muted">Add an extra layer of security to your account</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span>Two-Factor Authentication</span>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="twoFactor">
+                      <label class="form-check-label" for="twoFactor">Enable</label>
+                    </div>
+                  </div>
+                </div>
+
+                <hr>
+
+                <!-- Login Sessions -->
+                <div>
+                  <h6>Active Sessions</h6>
+                  <p class="text-muted">Manage your active login sessions</p>
+                  <div class="border rounded p-3 mb-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                        <strong>Current Session</strong>
+                        <br>
+                        <small class="text-muted">Chrome on Windows • Last active now</small>
+                      </div>
+                      <span class="badge bg-success">Active</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-outline-danger btn-sm">Sign out all other sessions</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notifications -->
+          <div class="tab-pane fade" id="notifications">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="mb-0">Notification Preferences</h5>
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <h6>Email Notifications</h6>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="orderUpdates" checked>
+                    <label class="form-check-label" for="orderUpdates">
+                      Order updates and shipping notifications
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="promotions">
+                    <label class="form-check-label" for="promotions">
+                      Promotional emails and special offers
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="newsletter">
+                    <label class="form-check-label" for="newsletter">
+                      Newsletter and product updates
+                    </label>
+                  </div>
+                </div>
+
+                <hr>
+
+                <div class="mb-3">
+                  <h6>SMS Notifications</h6>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="smsOrders">
+                    <label class="form-check-label" for="smsOrders">
+                      Order status updates via SMS
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="smsDelivery">
+                    <label class="form-check-label" for="smsDelivery">
+                      Delivery notifications via SMS
+                    </label>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Preferences</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Privacy -->
+          <div class="tab-pane fade" id="privacy">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="mb-0">Privacy Settings</h5>
+              </div>
+              <div class="card-body">
+                <div class="mb-4">
+                  <h6>Data & Privacy</h6>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Allow personalized recommendations</span>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="recommendations" checked>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Share data for analytics</span>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="analytics">
+                    </div>
+                  </div>
+                </div>
+
+                <hr>
+
+                <div class="mb-4">
+                  <h6>Account Actions</h6>
+                  <div class="d-grid gap-2 d-md-block">
+                    <button class="btn btn-outline-primary">Download My Data</button>
+                    <button class="btn btn-outline-warning">Deactivate Account</button>
+                    <button class="btn btn-outline-danger">Delete Account</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

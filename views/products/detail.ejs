@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    .zoom-img { cursor: zoom-in; }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main class="container py-4">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="mb-3">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
+        <li class="breadcrumb-item active" aria-current="page"><%= product.name %></li>
+      </ol>
+    </nav>
+
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <img src="<%= product.imageUrl %>" class="img-fluid rounded zoom-img" alt="<%= product.name %>">
+      </div>
+      <div class="col-lg-6">
+        <h1 class="h3"><%= product.name %></h1>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="fw-bold h5 mb-0">$<%= product.price.toFixed(2) %></span>
+          <span class="badge bg-success">In stock: <%= product.stock %></span>
+        </div>
+        <div class="text-warning mb-3">
+          <% const r = Math.round(product.rating || 0); %>
+          <% for (let i = 0; i < 5; i++) { %>
+            <i class="bi <%= i < r ? 'bi-star-fill' : 'bi-star' %>"></i>
+          <% } %>
+          <span class="text-muted small">(<%= product.rating || 0 %>)</span>
+        </div>
+        <div class="mb-3">
+          <div class="alert alert-info p-2 small mb-0">Discounts and coupons applied at checkout.</div>
+        </div>
+        <div class="mb-3">
+          <p class="mb-1 small text-muted">Highlights</p>
+          <ul class="small mb-2">
+            <li>Water resistant</li>
+            <li>Stainless steel</li>
+            <li>Quartz movement</li>
+          </ul>
+        </div>
+        <div class="d-flex gap-2">
+          <% if (product.stock > 0) { %>
+            <button class="btn btn-dark">Add to Cart</button>
+          <% } else { %>
+            <button class="btn btn-secondary" disabled>Sold Out</button>
+          <% } %>
+          <a href="/shop" class="btn btn-outline-secondary">Back to Shop</a>
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-5" />
+
+    <section>
+      <h2 class="h5 mb-3">Related Products</h2>
+      <div class="row g-3">
+        <% related.forEach(product => { %>
+          <div class="col-6 col-md-4 col-lg-3">
+            <%- include('../partials/product-card', { product }) %>
+          </div>
+        <% }) %>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Simple image zoom (open in new tab or implement modal zoom viewer)
+    document.querySelector('.zoom-img')?.addEventListener('click', (e) => {
+      const src = e.currentTarget.getAttribute('src');
+      window.open(src, '_blank');
+    });
+  </script>
+</body>
+</html>

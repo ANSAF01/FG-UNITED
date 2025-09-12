@@ -1,0 +1,39 @@
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        // Show success/error messages from URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const success = urlParams.get('success');
+        const error = urlParams.get('error');
+        
+        if (success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: success,
+                timer: 3000,
+                showConfirmButton: false
+            });
+        }
+        
+        if (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: error,
+                timer: 3000,
+                showConfirmButton: false
+            });
+        }
+        
+        // Clear URL params after showing message
+        if (success || error) {
+            const url = new URL(window.location);
+            url.searchParams.delete('success');
+            url.searchParams.delete('error');
+            window.history.replaceState({}, document.title, url);
+        }
+    </script>
+</body>
+</html>

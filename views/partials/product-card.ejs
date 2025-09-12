@@ -1,0 +1,38 @@
+<!-- views/partials/product-card.ejs -->
+<%
+// Normalize input: support either `product` object or separate props: id, name, price, img
+const p = (typeof product !== 'undefined' && product) ? product : {
+  _id: (typeof id !== 'undefined') ? id : '',
+  name: (typeof name !== 'undefined') ? name : '',
+  price: (typeof price !== 'undefined') ? price : '',
+  imageUrl: (typeof img !== 'undefined') ? img : ''
+};
+
+function formatPrice(val) {
+  if (typeof val === 'number') return `$${val.toFixed(2)}`;
+  return String(val);
+}
+%>
+<div class="card h-100 shadow-sm">
+  <a href="/shop/<%= p._id %>" class="d-block position-relative overflow-hidden">
+    <img src="<%= p.imageUrl %>" class="card-img-top" alt="<%= p.name %>" 
+         style="height: 250px; object-fit: contain; transition: transform 0.3s ease;">
+  </a>
+  <div class="card-body text-center d-flex flex-column">
+    <h5 class="card-title mb-2" style="font-size: 1rem;"><%= p.name %></h5>
+    <p class="card-text text-muted mb-3 fw-bold"><%= formatPrice(p.price) %></p>
+    <a href="/shop/<%= p._id %>" class="btn btn-dark btn-sm mt-auto">View Details</a>
+  </div>
+</div>
+
+<style>
+.card:hover img {
+  transform: scale(1.05);
+}
+.card {
+  transition: box-shadow 0.3s ease;
+}
+.card:hover {
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+</style>

@@ -1,0 +1,211 @@
+<%- include('partials/header') %>
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-tags me-2"></i>Category Management
+                </h1>
+                <div class="d-flex gap-2">
+                    <form class="d-flex" method="GET" action="/admin/categories">
+                        <input class="form-control me-2" type="search" name="search" 
+                               value="<%= search %>" placeholder="Search categories...">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <% if (search) { %>
+                            <a href="/admin/categories" class="btn btn-outline-danger ms-2">
+                                <i class="fas fa-times"></i> Clear
+                            </a>
+                        <% } %>
+                    </form>
+                    <a href="/admin/categories/add" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Category
+                    </a>
+                </div>
+            </div>
+
+            <!-- Categories Table -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Total Categories: <%= totalCategories %></span>
+                        <div class="d-flex align-items-center">
+                            <label class="me-2">Show:</label>
+                            <select class="form-select form-select-sm" style="width: auto;" onchange="changeLimit(this.value)">
+                                <option value="10" <%= limit == 10 ? 'selected' : '' %>>10</option>
+                                <option value="25" <%= limit == 25 ? 'selected' : '' %>>25</option>
+                                <option value="50" <%= limit == 50 ? 'selected' : '' %>>50</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (categories.length > 0) { %>
+                                    <% categories.forEach((category, index) => { %>
+                                        <tr>
+                                            <td><%= ((currentPage - 1) * limit) + index + 1 %></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-primary text-white rounded px-2 py-1 me-2" style="font-size: 12px;">
+                                                        <i class="fas fa-tag"></i>
+                                                    </div>
+                                                    <strong><%= category.name %></strong>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-muted">
+                                                    <%= category.description || 'No description' %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge <%= category.status ? 'bg-success' : 'bg-warning' %>">
+                                                    <%= category.status ? 'Active' : 'Inactive' %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    <%= new Date(category.createdAt).toLocaleDateString() %>
+                                                </small>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="btn-group" role="group">
+                                                    <a href="/admin/categories/<%= category._id %>/edit" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-edit me-1"></i>Edit
+                                                    </a>
+                                                    <button class="btn btn-sm btn-outline-danger" 
+                                                            onclick="deleteCategory('<%= category._id %>', '<%= category.name %>')">
+                                                        <i class="fas fa-trash me-1"></i>Delete
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">
+                                            <i class="fas fa-tags fa-3x text-muted mb-3"></i>
+                                            <h5>No categories found</h5>
+                                            <p class="text-muted">
+                                                <% if (search) { %>
+                                                    No categories match your search criteria.
+                                                <% } else { %>
+                                                    No categories have been created yet.
+                                                <% } %>
+                                            </p>
+                                            <a href="/admin/categories/add" class="btn btn-primary">
+                                                <i class="fas fa-plus me-2"></i>Add First Category
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <% if (totalPages > 1) { %>
+                <nav aria-label="Category pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item <%= !hasPrevPage ? 'disabled' : '' %>">
+                            <a class="page-link" href="?page=<%= prevPage %>&search=<%= search %>&limit=<%= limit %>">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        
+                        <% for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { %>
+                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>&search=<%= search %>&limit=<%= limit %>">
+                                    <%= i %>
+                                </a>
+                            </li>
+                        <% } %>
+                        
+                        <li class="page-item <%= !hasNextPage ? 'disabled' : '' %>">
+                            <a class="page-link" href="?page=<%= nextPage %>&search=<%= search %>&limit=<%= limit %>">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+function changeLimit(limit) {
+    const url = new URL(window.location);
+    url.searchParams.set('limit', limit);
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+function deleteCategory(categoryId, categoryName) {
+    Swal.fire({
+        title: 'Delete Category',
+        text: `Are you sure you want to delete "${categoryName}"? This action cannot be undone.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/categories/${categoryId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: data.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: data.message
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Something went wrong. Please try again.'
+                });
+            });
+        }
+    });
+}
+</script>
+
+<%- include('partials/footer') %>

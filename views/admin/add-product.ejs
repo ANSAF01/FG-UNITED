@@ -1,0 +1,262 @@
+<%- include('partials/header') %>
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="/admin/products">Products</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Add Product</li>
+                </ol>
+            </nav>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">
+                                <i class="fas fa-plus me-2"></i>Add New Product
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <% if (errors && errors.general) { %>
+                                <div class="alert alert-danger">
+                                    <%= errors.general %>
+                                </div>
+                            <% } %>
+
+                            <form method="POST" action="/admin/products/add" enctype="multipart/form-data">
+                                <div class="row g-4">
+                                    <!-- Basic Information -->
+                                    <div class="col-12">
+                                        <h5 class="border-bottom pb-2">Basic Information</h5>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="name" class="form-label">
+                                            Product Name <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control <%= errors && errors.name ? 'is-invalid' : '' %>" 
+                                               id="name" 
+                                               name="name" 
+                                               value="<%= product ? product.name : '' %>" 
+                                               required>
+                                        <% if (errors && errors.name) { %>
+                                            <div class="invalid-feedback">
+                                                <%= errors.name %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="brand" class="form-label">
+                                            Brand <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control <%= errors && errors.brand ? 'is-invalid' : '' %>" 
+                                               id="brand" 
+                                               name="brand" 
+                                               value="<%= product ? product.brand : '' %>" 
+                                               required>
+                                        <% if (errors && errors.brand) { %>
+                                            <div class="invalid-feedback">
+                                                <%= errors.brand %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="description" class="form-label">
+                                            Description <span class="text-danger">*</span>
+                                        </label>
+                                        <textarea class="form-control <%= errors && errors.description ? 'is-invalid' : '' %>" 
+                                                  id="description" 
+                                                  name="description" 
+                                                  rows="4" 
+                                                  required><%= product ? product.description : '' %></textarea>
+                                        <% if (errors && errors.description) { %>
+                                            <div class="invalid-feedback">
+                                                <%= errors.description %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+
+                                    <!-- Pricing & Inventory -->
+                                    <div class="col-12">
+                                        <h5 class="border-bottom pb-2">Pricing & Inventory</h5>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label for="price" class="form-label">
+                                            Price ($) <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="number" 
+                                               step="0.01" 
+                                               min="0"
+                                               class="form-control <%= errors && errors.price ? 'is-invalid' : '' %>" 
+                                               id="price" 
+                                               name="price" 
+                                               value="<%= product ? product.price : '' %>" 
+                                               required>
+                                        <% if (errors && errors.price) { %>
+                                            <div class="invalid-feedback">
+                                                <%= errors.price %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label for="stock" class="form-label">
+                                            Stock Quantity <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="number" 
+                                               min="0"
+                                               class="form-control <%= errors && errors.stock ? 'is-invalid' : '' %>" 
+                                               id="stock" 
+                                               name="stock" 
+                                               value="<%= product ? product.stock : '' %>" 
+                                               required>
+                                        <% if (errors && errors.stock) { %>
+                                            <div class="invalid-feedback">
+                                                <%= errors.stock %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label for="category" class="form-label">
+                                            Category <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select <%= errors && errors.category ? 'is-invalid' : '' %>" 
+                                                id="category" 
+                                                name="category" 
+                                                required>
+                                            <option value="">Select Category</option>
+                                            <% categories.forEach(cat => { %>
+                                                <option value="<%= cat._id %>" 
+                                                        <%= (product && product.category === cat._id) ? 'selected' : '' %>>
+                                                    <%= cat.name %>
+                                                </option>
+                                            <% }) %>
+                                        </select>
+                                        <% if (errors && errors.category) { %>
+                                            <div class="invalid-feedback">
+                                                <%= errors.category %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+
+                                    <!-- Images -->
+                                    <div class="col-12">
+                                        <h5 class="border-bottom pb-2">Product Images</h5>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="images" class="form-label">
+                                            Product Images <span class="text-danger">*</span>
+                                            <small class="text-muted">(At least 1 image is required)</small>
+                                        </label>
+                                        <input type="file" 
+                                               class="form-control <%= errors && errors.images ? 'is-invalid' : '' %>" 
+                                               id="images" 
+                                               name="images" 
+                                               accept="image/*" 
+                                               multiple 
+                                               required>
+                                        <div class="form-text">
+                                            Select multiple images at once. Images will be automatically resized and optimized.
+                                        </div>
+                                        <% if (errors && errors.images) { %>
+                                            <div class="invalid-feedback">
+                                                <%= errors.images %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div id="imagePreview" class="row g-3 mt-2"></div>
+                                    </div>
+
+                                    <!-- Status -->
+                                    <div class="col-12">
+                                        <h5 class="border-bottom pb-2">Status</h5>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="status" class="form-label">Product Status</label>
+                                        <select class="form-select" id="status" name="status">
+                                            <option value="active" <%= (!product || product.status === 'active') ? 'selected' : '' %>>
+                                                Active
+                                            </option>
+                                            <option value="inactive" <%= (product && product.status === 'inactive') ? 'selected' : '' %>>
+                                                Inactive
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Submit Buttons -->
+                                    <div class="col-12">
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-2"></i>Save Product
+                                            </button>
+                                            <a href="/admin/products" class="btn btn-outline-secondary">
+                                                <i class="fas fa-times me-2"></i>Cancel
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Image preview functionality
+document.getElementById('images').addEventListener('change', function(e) {
+    const files = Array.from(e.target.files);
+    const previewContainer = document.getElementById('imagePreview');
+    previewContainer.innerHTML = '';
+
+    files.forEach((file, index) => {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const col = document.createElement('div');
+                col.className = 'col-md-3 col-sm-4 col-6';
+                col.innerHTML = `
+                    <div class="card">
+                        <img src="${e.target.result}" class="card-img-top" style="height: 150px; object-fit: contain;" alt="Preview ${index + 1}">
+                        <div class="card-body p-2">
+                            <small class="text-muted">Image ${index + 1}</small>
+                        </div>
+                    </div>
+                `;
+                previewContainer.appendChild(col);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    if (files.length >1) {
+        const successDiv = document.createElement('div');
+        successDiv.className = 'col-12';
+        successDiv.innerHTML = `
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle me-2"></i>
+                ${files.length} images selected. Images will be automatically resized and optimized.
+            </div>
+        `;
+        previewContainer.appendChild(successDiv);
+    }
+});
+</script>
+
+<%- include('partials/footer') %>
