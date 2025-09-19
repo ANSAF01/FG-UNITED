@@ -1,14 +1,14 @@
 const Category = require('../../models/Category');
 
-// Category management page with search and pagination
+// Category management
 exports.categoryManagement = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 2;
         const search = req.query.search || '';
         const skip = (page - 1) * limit;
 
-        // Build search query (only non-deleted categories)
+        // Search query
         let query = { isDeleted: false };
         if (search) {
             query = {
@@ -20,14 +20,14 @@ exports.categoryManagement = async (req, res) => {
             };
         }
 
-        // Get categories with pagination, sorted by newest first
+        // Get categories
         const categories = await Category.find(query)
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
             .lean();
 
-        // Get total count for pagination
+        // Total count
         const totalCategories = await Category.countDocuments(query);
         const totalPages = Math.ceil(totalCategories / limit);
 
@@ -71,9 +71,9 @@ exports.addCategory = async (req, res) => {
     try {
         const { name, description, status } = req.body;
 
-        // Check if category already exists
+        // Check existing
         const existingCategory = await Category.findOne({ 
-            name: { $regex: new RegExp(`^${name}$`, 'i') },
+            name: { $regex: new RegExp(`^${name}, 'i') },
             isDeleted: false 
         });
 
@@ -86,7 +86,7 @@ exports.addCategory = async (req, res) => {
             });
         }
 
-        // Create new category
+        // Create category
         const category = new Category({
             name: name.trim(),
             description: description?.trim() || '',
@@ -137,9 +137,9 @@ exports.updateCategory = async (req, res) => {
         const { categoryId } = req.params;
         const { name, description, status } = req.body;
 
-        // Check if another category with same name exists
+        // Check existing
         const existingCategory = await Category.findOne({ 
-            name: { $regex: new RegExp(`^${name}$`, 'i') },
+            name: { $regex: new RegExp(`^${name}, 'i') },
             isDeleted: false,
             _id: { $ne: categoryId }
         });
@@ -170,7 +170,7 @@ exports.updateCategory = async (req, res) => {
     }
 };
 
-// Delete category (soft delete)
+// Delete category
 exports.deleteCategory = async (req, res) => {
     try {
         const { categoryId } = req.params;

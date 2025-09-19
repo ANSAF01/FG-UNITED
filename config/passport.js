@@ -8,7 +8,7 @@ passport.use(new GoogleStrategy({
     callbackURL: "/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
     try {
-        // Check if user already exists with this Google ID
+        // Check existing user
         let user = await User.findOne({ 
             $or: [
                 { googleId: profile.id },
@@ -17,7 +17,7 @@ passport.use(new GoogleStrategy({
         });
 
         if (user) {
-            // User exists, update Google ID if not set
+            // Update Google ID
             if (!user.googleId) {
                 user.googleId = profile.id;
                 await user.save();
@@ -30,8 +30,8 @@ passport.use(new GoogleStrategy({
             googleId: profile.id,
             fullname: profile.displayName,
             email: profile.emails[0].value,
-            mobile: '', // Will need to be filled later
-            password: '', // No password for OAuth users
+            mobile: '', 
+            password: '',
             isBlocked: false,
             role: 'user'
         });

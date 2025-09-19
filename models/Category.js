@@ -28,7 +28,7 @@ const categorySchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index for better search performance
+// Indexing
 categorySchema.index({ name: 1, isDeleted: 1 });
 categorySchema.index({ createdAt: -1 });
 

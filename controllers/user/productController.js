@@ -1,30 +1,29 @@
 const Product = require('../../models/Product');
 const Category = require('../../models/Category');
 
-// Show homepage with different product sections
+// Homepage products
 exports.getHomepageProducts = async (req, res) => {
   try {
     const processProduct = p => ({
       ...p,
-      _id: p._id.toString(), // Ensure ID is a string for URLs
+      _id: p._id.toString(), // ID to string
       price: `₹${p.price.toFixed(2)}`,
       imageUrl: p.images && p.images.length > 0 ? p.images[0] : '/images/placeholder.jpg'
     });
 
-    // New Arrivals: last 4 added products
+    // New Arrivals
     const newArrivals = await Product.find({ isDeleted: false, status: true })
       .sort({ createdAt: -1 })
       .limit(4)
       .lean();
 
-    // Trending Products: For a real implementation, this should be based on sales data.
-    // As a placeholder, we'll sort by price descending.
+    // Trending Products (placeholder)
     const trending = await Product.find({ isDeleted: false, status: true })
-      .sort({ price: -1 }) // NOTE: Placeholder logic. Should be based on sales.
+      .sort({ price: -1 })
       .limit(4)
       .lean();
 
-    // Explore More: 4 random products
+    // Explore More
     const exploreMore = await Product.aggregate([
       { $match: { isDeleted: false, status: true } },
       { $sample: { size: 4 } }
@@ -43,7 +42,7 @@ exports.getHomepageProducts = async (req, res) => {
   }
 };
 
-// List products with search, sort, filter, and pagination
+// List products
 exports.listProducts = async (req, res) => {
   try {
     const page = Math.max(1, parseInt(req.query.page || '1', 10));
@@ -52,13 +51,13 @@ exports.listProducts = async (req, res) => {
     const sort = req.query.sort || '';
     const skip = (page - 1) * limit;
 
-    // Build query - exclude deleted and blocked products
+    // Build query
     let query = { 
       isDeleted: false, 
       status: true 
     };
 
-    // Search functionality
+    // Search
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: 'i' } },
@@ -99,8 +98,8 @@ exports.listProducts = async (req, res) => {
       }
     }
 
-    // Build sort object
-    let sortObj = { createdAt: -1 }; // Default: newest first
+    // Build sort
+    let sortObj = { createdAt: -1 }; // Default sort
     switch (sort) {
       case 'price_asc':
         sortObj = { price: 1 };
@@ -122,7 +121,7 @@ exports.listProducts = async (req, res) => {
         break;
     }
 
-    // Get products with pagination
+    // Get products
     const products = await Product.find(query)
       .populate('category', 'name')
       .sort(sortObj)
@@ -130,7 +129,7 @@ exports.listProducts = async (req, res) => {
       .limit(limit)
       .lean();
 
-    // Get total count for pagination
+    // Total count
     const total = await Product.countDocuments(query);
     const totalPages = Math.max(1, Math.ceil(total / limit));
 
@@ -159,7 +158,7 @@ exports.listProducts = async (req, res) => {
   }
 };
 
-// Product details page
+// Product details
 exports.productDetails = async (req, res) => {
   try {
     const { id } = req.params;
@@ -168,12 +167,18 @@ exports.productDetails = async (req, res) => {
       .populate('category', 'name')
       .lean();
 
-    // Redirect if product not found, deleted, or blocked
+    // Redirect if not found
     if (!product || product.isDeleted || !product.status) {
       return res.redirect('/shop');
     }
 
-    // Get related products from same category
+    // Check category
+    if (!product.category) {
+      console.error(`Product with ID ${id} has a missing or deleted category.`);
+      return res.redirect('/shop');
+    }
+
+    // Related products
     const related = await Product.find({
       category: product.category._id,
       _id: { $ne: product._id },
@@ -183,20 +188,10 @@ exports.productDetails = async (req, res) => {
     .limit(4)
     .lean();
 
-    // Add imageUrl for template compatibility
-    product.price = `₹${product.price.toFixed(2)}`;
-    product.imageUrl = product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.jpg';
-    
-    const relatedWithImages = related.map(p => ({
-      ...p,
-      price: `₹${p.price.toFixed(2)}`,
-      imageUrl: p.images && p.images.length > 0 ? p.images[0] : '/images/placeholder.jpg'
-    }));
-
     res.render('products/detail', { 
       title: product.name, 
       product, 
-      related: relatedWithImages 
+      related 
     });
 
   } catch (error) {

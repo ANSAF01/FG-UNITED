@@ -1,4 +1,4 @@
-// Admin authentication middleware
+// Admin auth middleware
 const requireAdminAuth = (req, res, next) => {
     if (!req.session.admin) {
         return res.redirect('/admin/login');
@@ -6,7 +6,7 @@ const requireAdminAuth = (req, res, next) => {
     next();
 };
 
-// Check if admin is already logged in
+// Redirect if logged in
 const redirectIfLoggedIn = (req, res, next) => {
     if (req.session.admin) {
         return res.redirect('/admin');

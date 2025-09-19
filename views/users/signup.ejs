@@ -14,15 +14,43 @@
           <div class="card-body p-4">
             <h1 class="h3 mb-3 text-center">Create your account</h1>
 
-            <form method="POST" action="/signup" class="vstack gap-3">
-              <input type="text" name="fullname" class="form-control" placeholder="Full Name" required />
-              <input type="email" name="email" class="form-control" placeholder="Email" required />
-              <input type="text" name="mobile" class="form-control" placeholder="Mobile Number" required />
-              <input type="password" name="password" class="form-control" placeholder="Password" required id="password" />
-              <input type="password" name="confirmPassword" class="form-control" placeholder="Confirm Password" required id="confirmPassword" />
-              <div class="input-group">
-                <input type="text" name="referralCode" class="form-control" placeholder="Referral Code" />
+                                    <form method="POST" action="/signup" class="vstack gap-3">
+              <div>
+                <input type="text" name="fullname" class="form-control <%= errors.fullname ? 'is-invalid' : '' %>" placeholder="Full Name" value="<%= formData.fullname || '' %>" />
+                <% if (errors.fullname) { %>
+                  <div class="invalid-feedback"><%= errors.fullname.msg %></div>
+                <% } %>
               </div>
+              <div>
+                <input type="email" name="email" class="form-control <%= errors.email ? 'is-invalid' : '' %>" placeholder="Email" value="<%= formData.email || '' %>" />
+                <% if (errors.email) { %>
+                  <div class="invalid-feedback"><%= errors.email.msg %></div>
+                <% } %>
+              </div>
+              <div>
+                <input type="text" name="mobile" class="form-control <%= errors.mobile ? 'is-invalid' : '' %>" placeholder="Mobile Number" value="<%= formData.mobile || '' %>" />
+                <% if (errors.mobile) { %>
+                  <div class="invalid-feedback"><%= errors.mobile.msg %></div>
+                <% } %>
+              </div>
+              <div>
+                <input type="password" name="password" class="form-control <%= errors.password ? 'is-invalid' : '' %>" placeholder="Password" id="password" />
+                <% if (errors.password) { %>
+                  <div class="invalid-feedback"><%= errors.password.msg %></div>
+                <% } %>
+              </div>
+              <div>
+                <input type="password" name="confirmPassword" class="form-control <%= errors.confirmPassword ? 'is-invalid' : '' %>" placeholder="Confirm Password" id="confirmPassword" />
+                <% if (errors.confirmPassword) { %>
+                  <div class="invalid-feedback"><%= errors.confirmPassword.msg %></div>
+                <% } %>
+              </div>
+              <div class="input-group">
+                <input type="text" name="referralCode" class="form-control" placeholder="Referral Code" value="<%= formData.referralCode || '' %>" />
+              </div>
+              <% if (errors.general) { %>
+                <div class="alert alert-danger"><%= errors.general.msg %></div>
+              <% } %>
               <button type="submit" class="btn btn-primary w-100">Sign Up</button>
             </form>
 

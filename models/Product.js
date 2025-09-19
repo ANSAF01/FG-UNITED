@@ -62,14 +62,14 @@ const productSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Indexes for better performance
+// Indexing
 productSchema.index({ name: 1, isDeleted: 1 });
 productSchema.index({ category: 1, isDeleted: 1 });
 productSchema.index({ brand: 1, isDeleted: 1 });
 productSchema.index({ createdAt: -1 });
 productSchema.index({ price: 1 });
 
-// Virtual for image URL
+// Virtual image URL
 productSchema.virtual('imageUrl').get(function() {
     return this.images && this.images.length > 0 ? this.images[0] : '/images/placeholder.jpg';
 });

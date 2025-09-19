@@ -42,12 +42,12 @@ router.use(requireAdminAuth);
 // Dashboard
 router.get('/', dashboard);
 
-// User Management Routes
+// User routes
 router.get('/users', userManagement);
 router.post('/users/:userId/block', blockUser);
 router.post('/users/:userId/unblock', unblockUser);
 
-// Category Management Routes
+// Category routes
 router.get('/categories', categoryManagement);
 router.get('/categories/add', addCategoryForm);
 router.post('/categories/add', addCategory);
@@ -55,7 +55,7 @@ router.get('/categories/:categoryId/edit', editCategoryForm);
 router.post('/categories/:categoryId/edit', updateCategory);
 router.delete('/categories/:categoryId', deleteCategory);
 
-// Product Management Routes
+// Product routes
 router.get('/products', productManagement);
 router.get('/products/add', addProductForm);
 router.post('/products/add', addProduct);

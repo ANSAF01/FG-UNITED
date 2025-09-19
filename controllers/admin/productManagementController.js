@@ -5,13 +5,13 @@ const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs').promises;
 
-// Configure multer for image upload
+// Multer config
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB limit
-        files: 10 // Maximum 10 files
+        fileSize: 5 * 1024 * 1024, // 5MB
+        files: 10 // Max 10 files
     },
     fileFilter: (req, file, cb) => {
         if (file.mimetype.startsWith('image/')) {
@@ -22,7 +22,7 @@ const upload = multer({
     }
 });
 
-// Image processing function
+// Image processing
 const processImages = async (files) => {
     const processedImages = [];
     
@@ -31,10 +31,10 @@ const processImages = async (files) => {
         const filename = `product_${Date.now()}_${i + 1}.jpg`;
         const filepath = path.join(__dirname, '../../public/images/products', filename);
         
-        // Ensure directory exists
+        // Create directory
         await fs.mkdir(path.dirname(filepath), { recursive: true });
         
-        // Process and save image
+        // Process and save
         await sharp(file.buffer)
             .resize(800, 800, {
                 fit: 'inside',
@@ -49,15 +49,15 @@ const processImages = async (files) => {
     return processedImages;
 };
 
-// Product management page with search and pagination
+// Product management
 exports.productManagement = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 2;
         const search = req.query.search || '';
         const skip = (page - 1) * limit;
 
-        // Build search query (only non-deleted products)
+        // Search query
         let query = { isDeleted: false };
         if (search) {
             query = {
@@ -70,7 +70,7 @@ exports.productManagement = async (req, res) => {
             };
         }
 
-        // Get products with pagination, sorted by newest first
+        // Get products
         const products = await Product.find(query)
             .populate('category', 'name')
             .sort({ createdAt: -1 })
@@ -78,7 +78,7 @@ exports.productManagement = async (req, res) => {
             .limit(limit)
             .lean();
 
-        // Get total count for pagination
+        // Total count
         const totalProducts = await Product.countDocuments(query);
         const totalPages = Math.ceil(totalProducts / limit);
 
@@ -135,7 +135,11 @@ exports.addProduct = [
 
             // Validation
             const errors = {};
-            if (!name?.trim()) errors.name = 'Product name is required';
+            if (!name?.trim()) {
+                errors.name = 'Product name is required';
+            } else if (/^[0-]+$/.test(name)) {
+                errors.name = 'Product name cannot be only zeros or dashes.';
+            }
             if (!description?.trim()) errors.description = 'Description is required';
             if (!price || price <= 0) errors.price = 'Valid price is required';
             if (!stock || stock < 0) errors.stock = 'Valid stock quantity is required';
@@ -236,7 +240,7 @@ exports.updateProduct = [
             if (!category) errors.category = 'Category is required';
             if (!brand?.trim()) errors.brand = 'Brand is required';
 
-            // Check total images (existing + new)
+            // Check total images
             const existingImagesArray = Array.isArray(existingImages) ? existingImages : (existingImages ? [existingImages] : []);
             const totalImages = existingImagesArray.length + (files ? files.length : 0);
             if (totalImages < 1) errors.images = 'At least 1 image is required';
@@ -252,13 +256,13 @@ exports.updateProduct = [
                 });
             }
 
-            // Process new images if any
+            // Process new images
             let newImageUrls = [];
             if (files && files.length > 0) {
                 newImageUrls = await processImages(files);
             }
 
-            // Combine existing and new images
+            // Combine images
             const finalImages = [...existingImagesArray, ...newImageUrls];
 
             // Update product
@@ -283,7 +287,7 @@ exports.updateProduct = [
     }
 ];
 
-// Delete product (soft delete)
+// Delete product
 exports.deleteProduct = async (req, res) => {
     try {
         const { productId } = req.params;

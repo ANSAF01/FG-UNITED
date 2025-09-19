@@ -24,11 +24,20 @@
             <!-- Email/Password Login -->
             <form action="/login" method="POST" class="vstack gap-3">
               <div>
-                <input type="email" name="email" class="form-control" placeholder="Your Email" required>
+                <input type="email" name="email" class="form-control <%= errors.email ? 'is-invalid' : '' %>" placeholder="Your Email" value="<%= formData.email || '' %>">
+                <% if (errors.email) { %>
+                  <div class="invalid-feedback"><%= errors.email.msg %></div>
+                <% } %>
               </div>
               <div>
-                <input type="password" name="password" class="form-control" placeholder="Your Password" required>
+                <input type="password" name="password" class="form-control <%= errors.password ? 'is-invalid' : '' %>" placeholder="Your Password">
+                <% if (errors.password) { %>
+                  <div class="invalid-feedback"><%= errors.password.msg %></div>
+                <% } %>
               </div>
+              <% if (errors.general) { %>
+                <div class="alert alert-danger"><%= errors.general.msg %></div>
+              <% } %>
               <div class="d-flex justify-content-between align-items-center">
                 <a href="/forgot-password" class="small">Forgot Password?</a>
               </div>

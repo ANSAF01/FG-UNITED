@@ -1,63 +1,63 @@
-const express = require('express'); // express framework
-const path = require('path');       // used for file path joining
-const session = require('express-session'); // used to manage user session
-const MongoStore = require('connect-mongo'); // store sessions in MongoDB
-const  morgan = require('morgan');  // logger for HTTP requests
-const mongoose = require('./config/db'); // MongoDB connection
-const passport = require('./config/passport'); // Passport configuration
+require('dotenv').config();
+const express = require('express');
+const path = require('path');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const  morgan = require('morgan');
+const mongoose = require('./config/db');
+const passport = require('./config/passport');
 const adminRoutes = require('./routes/adminRoutes');
 
-// create express app
+// Create app
 const app = express();
 
-// setting view engine
+// Port
+const PORT = process.env.PORT || 3000;
+
+// View engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// request logging
+// Request logging
 app.use(morgan('dev'));
 
-// to serve static files
+// Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// middleware used to parse JSON (like API requests)
+// JSON parsing
 app.use(express.json());
 
-// middleware to parse form submissions from HTML forms
+// Form submissions
 app.use(express.urlencoded({ extended: true }));
   
-// so the user needs to be logged in across all pages so we use sessions for it
+// Session setup
 app.use(
     session({
-        secret: process.env.SESSION_SECRET, // it will take secret key from .env
+        secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
-        store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }), // it will save sessions in MongoDB
+        store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
         cookie: {
-            maxAge: 1000 * 60 * 60, // 1 hour expiration
-            httpOnly: true, // prevent client-side JS from accessing the cookie
+            maxAge: 1000 * 60 * 60, // 1 hour
+            httpOnly: true,
         },
     })
 );
 
-// Initialize passport
-app.use(passport.initialize());
-app.use(passport.session());
-
-// for making user available in all templates
+// User locals
 app.use((req, res, next) => {
   res.locals.user = req.session.user || req.user || null;
   next();
 });
 
-// user routes
+// User routes
 const userRoutes = require('./routes/userRoutes');
 app.use('/', userRoutes);
 
-// admin routes
+// Admin routes
 app.use('/admin', adminRoutes);
 
-// error handler
+// Error handler
 app.use((err, req, res, next) => {
     console.log(err.stack);
     res.status(500).send('Something went wrong');
@@ -68,4 +68,8 @@ app.use((req, res) => {
     res.status(404).render('404', { title: 'Page not Found' });
 });
 
-module.exports = app;
+
+// Start server
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});

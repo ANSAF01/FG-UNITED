@@ -1,14 +1,14 @@
 const User = require('../../models/User');
 
-// User management page with search and pagination
+// User management
 exports.userManagement = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 2;
         const search = req.query.search || '';
         const skip = (page - 1) * limit;
 
-        // Build search query
+        // Search query
         let query = {};
         if (search) {
             query = {
@@ -20,14 +20,14 @@ exports.userManagement = async (req, res) => {
             };
         }
 
-        // Get users with pagination, sorted by newest first
+        // Get users
         const users = await User.find(query)
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
             .lean();
 
-        // Get total count for pagination
+        // Total count
         const totalUsers = await User.countDocuments(query);
         const totalPages = Math.ceil(totalUsers / limit);
 
